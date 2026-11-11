@@ -1,0 +1,76 @@
+/* Rulebook and Report pop-ups. Fixed-size boxes inside the stage (1920x1080 / 1080x1920): nothing scrolls,
+   nothing grows with longer text (long text is clamped / truncated). */
+.modal { position: absolute; inset: 0; z-index: 25; }
+.mback { position: absolute; inset: 0; background: rgba(11, 16, 51, 0.88); }
+.mcard {
+  position: absolute; display: grid; gap: 14px; padding: 28px;
+  background: var(--cream); border: var(--border) solid var(--ink); border-radius: var(--radius); box-shadow: var(--shadow-hard);
+  overflow: hidden;
+}
+.land .mcard { left: 60px; top: 40px; width: 1800px; height: 1000px; }
+.port .mcard { left: 40px; top: 60px; width: 1000px; height: 1800px; }
+
+.mhead { grid-area: head; display: flex; align-items: center; justify-content: space-between; min-width: 0; }
+.mtitle { font-family: var(--font-display); font-size: 84px; line-height: 1; color: var(--news-red); text-shadow: 4px 4px 0 var(--ink); white-space: nowrap; overflow: hidden; }
+.mclose { flex: none; width: 92px; height: 92px; border-radius: 50%; background: var(--ink); color: var(--paper); border: 5px solid var(--paper); font-family: var(--font-display); font-size: 52px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+.mlabel { font-family: var(--font-display); font-size: 48px; line-height: 1; letter-spacing: 1px; color: var(--ink); white-space: nowrap; overflow: hidden; display: flex; align-items: flex-end; min-width: 0; }
+
+.mchip {
+  min-width: 0; height: 100%; border: var(--border) solid var(--ink); border-radius: var(--radius-sm); background: var(--paper);
+  font-family: var(--font-display); font-size: 46px; letter-spacing: 1px; line-height: 1; white-space: nowrap; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-soft);
+}
+.mchip.sel { background: var(--news-red); color: var(--paper); }
+.mchip:active { transform: translate(4px, 4px); box-shadow: none; }
+
+/* ---------- report form ---------- */
+.mcard.report .mhead { grid-area: head; }
+.mcard.report .a1 { grid-area: a1; }
+.mcard.report .a2 { grid-area: a2; }
+.mcard.report .a3 { grid-area: a3; }
+.mcard.report .mchips { grid-area: chips; display: grid; gap: 12px; min-height: 0; }
+.mcard.report .mlist { grid-area: list; display: grid; grid-auto-rows: 66px; gap: 6px; align-content: start; min-height: 0; overflow: hidden; }
+.mcard.report .mnote { grid-area: note; height: 100%; font-size: 48px; padding: 0 20px; min-width: 0; }
+.mcard.report .mbtns { grid-area: btns; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; min-height: 0; }
+
+.land .mcard.report {
+  grid-template-columns: 740px 968px; column-gap: 24px;
+  grid-template-rows: 100px 52px 288px 52px 100px 120px 1fr;
+  grid-template-areas: "head head" "a1 a2" "chips list" "a3 list" "note list" "btns list" ". list";
+}
+.land .mcard.report .mchips { grid-template-rows: repeat(3, 1fr); }
+.port .mcard.report {
+  grid-template-columns: 932px;
+  grid-template-rows: 100px 52px 100px 52px 100px 52px 820px 120px;
+  grid-template-areas: "head" "a1" "chips" "a3" "note" "a2" "list" "btns"; /* note sits high so it stays above the phone keyboard */
+}
+.port .mcard.report .mlist { grid-auto-rows: 76px; }
+.port .mrow { height: 76px; }
+.port .mcard.report .mchips { grid-template-columns: repeat(3, 1fr); }
+
+.mrow {
+  min-width: 0; height: 66px; display: flex; align-items: center; gap: 14px; padding: 0 12px 0 8px; text-align: left;
+  border: 5px solid var(--ink); border-radius: var(--radius-sm); background: var(--paper); overflow: hidden;
+}
+.mrow.sel { background: var(--sun); box-shadow: 0 0 0 5px var(--pink); }
+.mtag { flex: none; width: 50px; height: 50px; border-radius: 10px; background: var(--night); color: var(--sun); font-family: var(--font-display); font-size: 44px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+.mrow.sel .mtag { background: var(--news-red); color: var(--paper); }
+.mrt { flex: 1; min-width: 0; font-size: 46px; line-height: 1.05; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- rulebook ---------- */
+.mcard.rules .mhead { grid-area: head; }
+.mcard.rules .mtabs { grid-area: tabs; display: grid; gap: 12px; min-height: 0; }
+.mcard.rules .mcontent { grid-area: body; min-height: 0; display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--night); border-radius: var(--radius-sm); }
+.land .mcard.rules { grid-template-columns: 1732px; grid-template-rows: 100px 84px 1fr; grid-template-areas: "head" "tabs" "body"; }
+.land .mcard.rules .mtabs { grid-template-columns: repeat(6, 1fr); }
+.port .mcard.rules { grid-template-columns: 932px; grid-template-rows: 100px 180px 1fr; grid-template-areas: "head" "tabs" "body"; }
+.port .mcard.rules .mtabs { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); }
+.mline { flex: 1; min-height: 0; display: flex; align-items: center; gap: 24px; padding: 0 22px; background: rgba(255, 255, 255, 0.08); border-radius: var(--radius-sm); color: var(--paper); }
+.mnum { flex: none; width: 68px; height: 68px; border-radius: 50%; background: var(--sun); color: var(--ink); font-family: var(--font-display); font-size: 48px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+.mtxt { flex: 1; min-width: 0; font-size: 52px; line-height: 1.08; font-weight: 700; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.port .mtxt { font-size: 54px; -webkit-line-clamp: 3; }
+
+/* ---------- home page button ---------- */
+.home-how { position: absolute; }
+.land .home-how { left: 0; top: 740px; width: 640px; height: 110px; }
+.port .home-how { left: 0; top: 1310px; width: 1000px; height: 120px; }

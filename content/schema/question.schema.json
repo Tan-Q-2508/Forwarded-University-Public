@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Forwarded University question",
+  "type": "object",
+  "required": ["id", "status", "region", "era", "source", "source_urls", "question", "real_answer", "wrong_options", "r2_decoy_category", "lore", "topic_tags", "sensitivity"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^q[0-9]{4}$" },
+    "status": { "enum": ["draft", "verified", "approved", "retired"] },
+    "region": { "enum": ["IN", "WORLD"] },
+    "era": { "enum": ["last5", "2000_2020", "older"] },
+    "year": { "type": "integer", "minimum": 1800, "maximum": 2100 },
+    "evergreen": { "type": "boolean" },
+    "source": {
+      "type": "object",
+      "required": ["newspaper", "language"],
+      "properties": {
+        "newspaper": { "type": "string" },
+        "language": { "type": "string" },
+        "state_or_city": { "type": "string" }
+      }
+    },
+    "source_urls": { "type": "array", "minItems": 1, "items": { "type": "string", "format": "uri" } },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "checked_on": { "type": "string", "format": "date" },
+        "sources_confirmed": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "question": { "type": "string", "maxLength": 140 },
+    "setup": { "type": "string", "maxLength": 160 },
+    "real_answer": { "type": "string", "maxLength": 60 },
+    "wrong_options": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "required": ["text", "origin", "status"],
+        "properties": {
+          "text": { "type": "string", "maxLength": 60 },
+          "origin": { "enum": ["curated", "crowd"] },
+          "status": { "enum": ["pending", "approved", "rejected"] }
+        }
+      }
+    },
+    "r2_decoy_category": { "type": "string", "maxLength": 40 },
+    "r2_alias_answers": { "type": "array", "items": { "type": "string", "maxLength": 60 } },
+    "r2_house_lies": { "type": "array", "minItems": 3, "items": { "type": "string", "maxLength": 60 } },
+    "lore": {
+      "type": "object",
+      "required": ["comparisons", "card_caption"],
+      "properties": {
+        "comparisons": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["text", "math"],
+            "properties": { "text": { "type": "string", "maxLength": 72 }, "math": { "type": "string", "maxLength": 40 } }
+          }
+        },
+        "card_caption": { "type": "string", "maxLength": 120 }
+      }
+    },
+    "topic_tags": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "sensitivity": {
+      "type": "object",
+      "required": ["flags", "cleared"],
+      "properties": {
+        "flags": { "type": "array", "items": { "type": "string" } },
+        "reviewed_by": { "type": "string" },
+        "reviewed_on": { "type": "string", "format": "date" },
+        "cleared": { "type": "boolean" }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "enum": ["verified", "approved"] } }, "required": ["status"] },
+      "then": {
+        "required": ["verification"],
+        "properties": {
+          "verification": {
+            "required": ["checked_on", "sources_confirmed"],
+            "properties": { "sources_confirmed": { "minimum": 1 } }
+          }
+        }
+      }
+    }
+  ]
+}

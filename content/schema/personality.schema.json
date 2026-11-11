@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Forwarded University personality (Who Am I)",
+  "type": "object",
+  "required": ["id", "name", "category", "hints", "difficulty", "illustration_brief", "sensitivity", "source"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^p[0-9]{3}$" },
+    "name": { "type": "string", "maxLength": 40 },
+    "aliases": { "type": "array", "items": { "type": "string" } },
+    "category": { "enum": ["sports", "film", "music", "politics", "business", "science", "history", "internet", "other"] },
+    "hints": { "type": "array", "minItems": 5, "maxItems": 5, "items": { "type": "string", "maxLength": 90 } },
+    "difficulty": { "enum": ["easy", "medium", "hard"] },
+    "illustration_brief": { "type": "string" },
+    "sensitivity": {
+      "type": "object",
+      "required": ["cleared"],
+      "properties": { "flags": { "type": "array", "items": { "type": "string" } }, "cleared": { "type": "boolean" } }
+    },
+    "source": { "type": "string" }
+  }
+}

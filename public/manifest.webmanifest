@@ -1,0 +1,11 @@
+{
+  "name": "Forwarded University",
+  "short_name": "Forwarded U",
+  "description": "A party game for 3 to 8 friends on a voice call: real news, fake news, bluff your friends.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b1033",
+  "theme_color": "#0b1033",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

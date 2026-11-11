@@ -1,0 +1,208 @@
+/* ---------- Reusable components ---------- */
+
+.card {
+  background: var(--paper);
+  border: var(--border) solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hard);
+  overflow: hidden;
+}
+
+/* Buttons: big, tactile, fixed size set by the layout that uses them */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  height: 100%;
+  width: 100%;
+  border: var(--border) solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  background: var(--sun);
+  color: var(--ink);
+  transition: transform 0.12s var(--ease-pop), box-shadow 0.12s;
+}
+.btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink); }
+.btn.red { background: var(--news-red); color: var(--paper); }
+.btn.mint { background: var(--mint); color: var(--ink); }
+.btn.ghost { background: var(--paper); color: var(--ink); }
+.btn.dark { background: var(--night); color: var(--paper); }
+.btn[disabled], .btn.off { background: #c9cbe0; color: #3f4373; box-shadow: none; cursor: not-allowed; }
+
+/* Avatar: stylised initial badge, no photos of real people */
+.avatar {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 5px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: var(--fs-min);
+  line-height: 1;
+  color: var(--ink);
+  overflow: hidden;
+}
+.av-0 { background: #ffd60a; } .av-1 { background: #ff2e93; } .av-2 { background: #2fb8ff; }
+.av-3 { background: #00c48c; } .av-4 { background: #ff8a1f; } .av-5 { background: #b48cff; }
+.av-6 { background: #ff6b6b; } .av-7 { background: #9be15d; }
+.avatar.grey { background: #c9cbe0; color: #3f4373; }
+
+/* Option letter chip (A, B, C...) so people can shout "C!" on the call */
+.letter {
+  flex: none;
+  width: 76px;
+  height: 76px;
+  border-radius: 16px;
+  background: var(--night);
+  color: var(--sun);
+  font-family: var(--font-display);
+  font-size: 56px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Stamp / sticker */
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  padding: 0 22px;
+  background: var(--news-red);
+  color: var(--paper);
+  border: 5px solid var(--paper);
+  outline: 4px solid var(--news-red);
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-size: var(--fs-min);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: rotate(-3deg);
+}
+.stamp.sun { background: var(--sun); color: var(--ink); border-color: var(--ink); outline-color: var(--sun); }
+.stamp.mint { background: var(--mint); color: var(--ink); border-color: var(--ink); outline-color: var(--mint); }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  padding: 0 22px;
+  border-radius: 32px;
+  background: var(--night);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: var(--fs-min);
+  letter-spacing: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.pill.sun { background: var(--sun); color: var(--ink); border: 5px solid var(--ink); }
+.pill.mint { background: var(--mint); color: var(--ink); }
+
+/* Option card (R1 + R2): fixed size set by the screen, text clamped so it can never grow the box */
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 14px;
+  background: var(--paper);
+  border: var(--border) solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  min-width: 0;
+}
+.opt-text {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-min);
+  line-height: 1.05;
+  font-weight: 700;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+.opt.clamp2 .opt-text { -webkit-line-clamp: 2; }
+.opt-btns { flex: none; display: flex; gap: 10px; }
+.mark {
+  width: 80px;
+  height: 80px;
+  border-radius: 18px;
+  border: 5px solid var(--ink);
+  background: #eceefa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  line-height: 1;
+}
+.mark.on-check { background: var(--mint); }
+.mark.on-bomb { background: var(--sun); }
+.opt.is-true { background: #c9f7e6; border-color: var(--mint-dark); box-shadow: 0 0 0 6px var(--mint); }
+.opt.is-false { background: #ffe0e5; border-color: var(--news-red-dark); }
+.opt.is-false .opt-text { text-decoration: line-through; text-decoration-thickness: 4px; }
+.opt.picked { background: #fff3b0; box-shadow: 0 0 0 6px var(--sun); }
+.opt.selected-bomb { background: #ffe9c2; box-shadow: 0 0 0 6px var(--pink); }
+.opt.mine { background: #d8f0ff; box-shadow: 0 0 0 6px var(--sky); }
+
+/* Verdict marks: colour is never the only signal */
+.verdict {
+  flex: none;
+  height: 64px;
+  padding: 0 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: var(--fs-min);
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+.verdict.true { background: var(--mint-dark); color: var(--paper); }
+.verdict.false { background: var(--news-red-dark); color: var(--paper); }
+
+/* Ready counter */
+.ready-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background: var(--night);
+  color: var(--paper);
+  border: var(--border) solid var(--ink);
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  letter-spacing: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.ready-count b { color: var(--sun); font-weight: 400; margin-right: 12px; }
+
+/* Confetti bits (decorative) */
+.confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.confetti i {
+  position: absolute;
+  top: var(--t, 0);
+  width: 22px; height: 38px;
+  border-radius: 4px;
+  animation: fall 6s linear infinite;
+}
+@keyframes fall { from { transform: translateY(-60px) rotate(0); } to { transform: translateY(260px) rotate(360deg); } }

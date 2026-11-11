@@ -1,0 +1,226 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* nothing scrolls, ever */
+  background: var(--night);
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+input { font: inherit; color: inherit; }
+
+/* Themed backdrop fills the letterbox space around the stage */
+#backdrop {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 46, 147, 0.35), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(47, 184, 255, 0.3), transparent 45%),
+    repeating-linear-gradient(135deg, var(--night) 0 38px, #10165a 38px 76px);
+}
+
+/* ---------- Stage ---------- */
+.stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  overflow: hidden;
+  background: var(--cream);
+  box-shadow: 0 0 0 10px var(--ink);
+}
+.stage.land { width: 1920px; height: 1080px; }
+.stage.port { width: 1080px; height: 1920px; }
+
+/* halftone poster texture */
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(18, 18, 43, 0.09) 3px, transparent 3.5px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+/* ---------- Top bar: news-channel header ---------- */
+.topbar {
+  position: absolute;
+  left: 0; top: 0; right: 0;
+  height: 104px;
+  background: var(--night);
+  border-bottom: var(--border) solid var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 36px;
+  color: var(--paper);
+}
+.port .topbar { height: 150px; padding: 0 28px; gap: 16px; }
+
+.logo {
+  flex: none;
+  width: 440px;
+  height: 72px;
+  background: var(--news-red);
+  border: 5px solid var(--paper);
+  border-radius: 12px;
+  transform: rotate(-2deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: var(--fs-min);
+  letter-spacing: 2px;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.port .logo { width: 290px; height: 106px; flex-direction: column; font-size: var(--fs-min); line-height: 1.05; }
+
+.round-tag {
+  flex: 1;
+  min-width: 0;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 52px;
+  letter-spacing: 2px;
+  color: var(--sun);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.port .round-tag { font-size: var(--fs-min); line-height: 1.05; white-space: normal; text-align: center; height: 106px; }
+
+.timer {
+  flex: none;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: var(--sun);
+  color: var(--ink);
+  border: 6px solid var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 52px;
+  line-height: 1;
+}
+.timer.hurry { background: var(--news-red); color: var(--paper); }
+.port .timer { width: 112px; height: 112px; }
+
+.tools { flex: none; display: flex; align-items: center; gap: 12px; }
+.port .tools { display: grid; grid-template-columns: 68px 68px; grid-auto-rows: 68px; gap: 6px; }
+.tool {
+  flex: none;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 5px solid var(--paper);
+  background: var(--night-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  line-height: 1;
+}
+.port .tool { width: 68px; height: 68px; border-width: 4px; }
+.tool.report { background: var(--pink); }
+
+/* ---------- Body + ticker ---------- */
+.body {
+  position: absolute;
+  left: 0; right: 0;
+  top: 104px;
+  bottom: 70px;
+  padding: 18px 60px;
+}
+.port .body { top: 150px; bottom: 100px; padding: 12px 40px; }
+
+.ticker {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 70px;
+  background: var(--news-red);
+  border-top: var(--border) solid var(--ink);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  color: var(--paper);
+}
+.port .ticker { height: 100px; }
+.ticker-label {
+  flex: none;
+  height: 100%;
+  width: 250px;
+  background: var(--ink);
+  color: var(--sun);
+  font-family: var(--font-display);
+  font-size: var(--fs-min);
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.port .ticker-label { width: 210px; }
+.ticker-track {
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+.ticker-run {
+  position: absolute;
+  left: 0; top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: var(--fs-min);
+  letter-spacing: 1px;
+  animation: tick 40s linear infinite;
+}
+@keyframes tick { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ---------- Dev-only screen switcher (outside the stage) ---------- */
+#dev-nav {
+  position: fixed;
+  left: 8px; bottom: 8px;
+  z-index: 10;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  max-width: calc(100vw - 16px);
+  font: 700 13px/1 system-ui, sans-serif;
+}
+#dev-nav a {
+  background: rgba(11, 16, 51, 0.88);
+  color: #fff;
+  padding: 7px 9px;
+  border-radius: 6px;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+#dev-nav a[aria-current="true"] { background: var(--news-red); }
+body.no-dev #dev-nav { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* The stage root clips everything: the document can never grow or scroll, even when the typing screen pins
+   the (taller than visible) stage to the top while the phone keyboard is open. */
+#stage-root { position: fixed; inset: 0; overflow: hidden; }

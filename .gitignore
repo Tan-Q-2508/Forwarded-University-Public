@@ -1,0 +1,11 @@
+node_modules/
+.wrangler/
+.dev.vars
+dist/
+*.log
+.DS_Store
+test-results/
+playwright-report/
+content/harvest-raw/
+
+content/.build/

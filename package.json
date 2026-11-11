@@ -1,0 +1,38 @@
+{
+  "name": "forwarded-university",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && vite build",
+    "preview": "vite preview",
+    "test:layout": "playwright test",
+    "test": "vitest run",
+    "test:engine": "vitest run",
+    "dev:worker": "wrangler dev --var DEV_CONTENT:1",
+    "dev:full": "vite build && wrangler dev --var DEV_CONTENT:1",
+    "deploy": "npm run build && wrangler deploy",
+    "test:ws": "node scripts/ws-smoke.mjs",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
+    "import:dry": "node scripts/import-content.mjs --dry",
+    "import:local": "node scripts/import-content.mjs",
+    "import:remote": "node scripts/import-content.mjs --remote",
+    "import:dev": "node scripts/import-content.mjs --dev",
+    "review": "node scripts/review.mjs",
+    "dev:d1": "wrangler dev --var ALLOW_TEST_CONTENT:1",
+    "deploy:check": "tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && vitest run && vite build && wrangler deploy --dry-run --outdir .wrangler/dryrun"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261108.1",
+    "@fontsource/anton": "^5.1.0",
+    "@fontsource/barlow-condensed": "^5.1.0",
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^26.6.6",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0",
+    "vitest": "^2.1.9",
+    "wrangler": "^4.158.0"
+  }
+}

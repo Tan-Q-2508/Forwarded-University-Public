@@ -1,0 +1,31 @@
+{
+  "id": "q0000",
+  "status": "draft",
+  "region": "IN",
+  "era": "last5",
+  "year": 2024,
+  "evergreen": false,
+  "source": { "newspaper": "EXAMPLE ONLY - NOT REAL NEWS", "language": "English", "state_or_city": "Nowhere" },
+  "source_urls": ["https://example.com/example-only"],
+  "question": "EXAMPLE ONLY: A fictional town council spent its budget on what?",
+  "setup": "EXAMPLE ONLY - NOT REAL NEWS. Never import this file into production.",
+  "real_answer": "A giant fictional statue of a fictional cat",
+  "wrong_options": [
+    { "text": "A fictional chai-powered streetlight", "origin": "curated", "status": "approved" },
+    { "text": "A fictional pothole museum", "origin": "curated", "status": "approved" },
+    { "text": "A fictional roundabout with Wi-Fi", "origin": "curated", "status": "approved" },
+    { "text": "A fictional pigeon traffic police", "origin": "curated", "status": "approved" }
+  ],
+  "r2_decoy_category": "EXAMPLE: Kitty Party",
+  "r2_alias_answers": ["giant cat statue"],
+  "r2_house_lies": ["A fictional lift to nowhere", "A fictional tax on shadows", "A fictional mango ATM"],
+  "lore": {
+    "comparisons": [
+      { "text": "EXAMPLE: costs as much as 1,000 fictional chai", "math": "100000 / 100 = 1000" },
+      { "text": "EXAMPLE: as tall as 3 fictional autos", "math": "9 m / 3 m = 3" }
+    ],
+    "card_caption": "EXAMPLE ONLY - NOT REAL NEWS"
+  },
+  "topic_tags": ["example"],
+  "sensitivity": { "flags": [], "cleared": false }
+}

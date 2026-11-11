@@ -1,0 +1,44 @@
+/* Design tokens: Forwarded University.
+   College-fest poster meets breaking-news channel. */
+@import "@fontsource/anton/400.css";
+@import "@fontsource/barlow-condensed/600.css";
+@import "@fontsource/barlow-condensed/700.css";
+
+:root {
+  /* Colour */
+  --ink: #12122b;
+  --night: #0b1033;
+  --night-2: #1a1f5c;
+  --news-red: #e1062c;
+  --news-red-dark: #9d0420;
+  --sun: #ffd60a;
+  --sun-dark: #e0a800;
+  --pink: #ff2e93;
+  --mint: #00c48c;
+  --mint-dark: #007f5b;
+  --sky: #2fb8ff;
+  --cream: #fff6e0;
+  --paper: #ffffff;
+  --grey: #8d90b5;
+  --grey-dark: #3b3f73;
+
+  /* Type */
+  --font-display: "Anton", "Impact", sans-serif;
+  --font-body: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --fs-min: 44px; /* never go below this on the stage */
+  --fs-body: 46px;
+  --fs-lg: 56px;
+  --fs-xl: 76px;
+  --fs-huge: 190px;
+
+  /* Spacing + shape */
+  --gap: 16px;
+  --radius: 22px;
+  --radius-sm: 14px;
+  --border: 6px;
+  --shadow-hard: 8px 8px 0 var(--ink);
+  --shadow-soft: 4px 4px 0 var(--ink);
+
+  /* Motion */
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+}

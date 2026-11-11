@@ -1,0 +1,29 @@
+name: CI
+on:
+  push: { branches: [main] }
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - name: Type check (client, engine, worker)
+        run: npx tsc --noEmit && npx tsc --noEmit -p tsconfig.worker.json
+      - name: Engine tests, test bots, content + moderation + contrast
+        run: npm test
+      - name: Build
+        run: npx vite build
+      - name: Deploy dry-run (validates wrangler config and bundle, deploys nothing)
+        run: npx wrangler deploy --dry-run --outdir .wrangler/dryrun
+      - name: Install browser for layout tests
+        run: npx playwright install --with-deps chromium
+      - name: Layout tests (every screen at every size) + phone-keyboard tests
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: layout-screenshots, path: test-results/ }

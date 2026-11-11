@@ -1,0 +1,102 @@
+// Import verified content from GitHub master files into D1.
+//   node scripts/import-content.mjs            validate + import into the LOCAL database
+//   node scripts/import-content.mjs --remote   validate + import into the PRODUCTION database
+//   node scripts/import-content.mjs --dry      validate and write the SQL only
+//   node scripts/import-content.mjs --dev      load the synthetic TEST pack into the LOCAL database (never remote)
+// Sources: content/questions/*.json, content/personalities/*.json, content/curses.json, content/names-decoys.txt
+// Only status "approved" rows are imported. Anything invalid stops the import (nothing partial goes in).
+// Needs Node 22.18+ (runs the TypeScript validators directly).
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { join } from "node:path";
+import { norm } from "../src/engine/text.ts";
+import { validateCurse, validatePersonality, validateQuestion } from "../src/engine/validate.ts";
+
+const args = new Set(process.argv.slice(2));
+const REMOTE = args.has("--remote"), DEV = args.has("--dev"), DRY = args.has("--dry");
+if (DEV && REMOTE) { console.error("Refusing: --dev loads synthetic TEST content and may never go to the remote database."); process.exit(1); }
+
+const readJsonDir = (dir) => {
+  if (!existsSync(dir)) return [];
+  const out = [];
+  for (const f of readdirSync(dir).filter((x) => x.endsWith(".json")).sort()) {
+    const j = JSON.parse(readFileSync(join(dir, f), "utf8"));
+    for (const item of Array.isArray(j) ? j : [j]) out.push({ file: f, item });
+  }
+  return out;
+};
+
+let questions, personalities, curses, decoys;
+if (DEV) {
+  const { makeContent } = await import("../src/engine/devContent.ts");
+  const c = makeContent(40, 12);
+  questions = c.questions.map((q, i) => ({ file: "dev", item: { ...q, status: "approved", era: "last5", year: 2024, evergreen: false, verification: { checked_on: "2026-01-01", sources_confirmed: 2 }, sensitivity: { flags: [], cleared: true } } }));
+  personalities = c.personalities.map((p) => ({ file: "dev", item: { ...p, status: "approved", category: "other", difficulty: "easy", illustration_brief: "TEST silhouette", sensitivity: { cleared: true }, source: "TEST" } }));
+  curses = c.curses;
+  decoys = c.names.filter((n) => n.startsWith("Decoy"));
+} else {
+  questions = readJsonDir("content/questions");
+  personalities = readJsonDir("content/personalities");
+  curses = existsSync("content/curses.json") ? JSON.parse(readFileSync("content/curses.json", "utf8")) : [];
+  decoys = existsSync("content/names-decoys.txt") ? readFileSync("content/names-decoys.txt", "utf8").split(/\r?\n/).map((x) => x.trim()).filter((x) => x && !x.startsWith("#")) : [];
+}
+
+const errors = [];
+let skipped = 0;
+const ids = new Set();
+const okQ = [], okP = [];
+for (const { file, item } of questions) {
+  if (item.status !== "approved") { skipped++; continue; }
+  const probs = validateQuestion(item, { requireApproved: true, allowMarkers: DEV });
+  if (ids.has(item.id)) probs.push("duplicate id");
+  ids.add(item.id);
+  if (probs.length) errors.push(`${file} ${item.id ?? "?"}: ${probs.join("; ")}`); else okQ.push(item);
+}
+const pids = new Set();
+for (const { file, item } of personalities) {
+  if (item.status !== undefined && item.status !== "approved") { skipped++; continue; }
+  const probs = validatePersonality(item, { requireApproved: true, allowMarkers: DEV });
+  if (pids.has(item.id)) probs.push("duplicate id");
+  pids.add(item.id);
+  if (probs.length) errors.push(`${file} ${item.id ?? "?"}: ${probs.join("; ")}`); else okP.push(item);
+}
+const okC = [];
+for (const c of curses) { const p = validateCurse(c); if (p.length) errors.push(`curse "${c}": ${p.join("; ")}`); else okC.push(c); }
+
+// the dropdown: every answer + alias + decoys, de-duplicated; must be 300+ for production
+const nameMap = new Map();
+for (const p of okP) for (const n of [p.name, ...(p.aliases ?? [])]) nameMap.set(norm(n), { name: n, kind: "answer" });
+for (const d of decoys) if (!nameMap.has(norm(d))) nameMap.set(norm(d), { name: d, kind: "decoy" });
+const names = [...nameMap.values()];
+
+const warn = [];
+if (okQ.length < 250) warn.push(`questions: ${okQ.length} (launch target 250)`);
+if (okP.length < 80) warn.push(`personalities: ${okP.length} (launch target 80)`);
+if (names.length < 300) (REMOTE ? errors : warn).push(`names list: ${names.length} (the dropdown needs 300+ including decoys)`);
+if (REMOTE && (okQ.length < 12 || okP.length < 2)) errors.push("not enough approved content to run a game (need 12+ questions and 2+ personalities)");
+
+if (errors.length) { console.error(`\nIMPORT STOPPED: ${errors.length} problem(s)\n  - ` + errors.join("\n  - ")); process.exit(1); }
+
+const q = (s) => `'${String(s).replace(/'/g, "''")}'`;
+const now = new Date().toISOString();
+const sql = [];
+sql.push("-- generated by scripts/import-content.mjs; do not edit");
+for (const x of okQ) sql.push(`INSERT INTO questions (id, status, region, era, json, updated_at) VALUES (${q(x.id)}, 'approved', ${q(x.region)}, ${q(x.era ?? "")}, ${q(JSON.stringify(x))}, ${q(now)}) ON CONFLICT (id) DO UPDATE SET region = excluded.region, era = excluded.era, json = excluded.json, updated_at = excluded.updated_at;`);
+for (const x of okP) sql.push(`INSERT INTO personalities (id, status, name, json) VALUES (${q(x.id)}, 'approved', ${q(x.name)}, ${q(JSON.stringify(x))}) ON CONFLICT (id) DO UPDATE SET name = excluded.name, json = excluded.json;`);
+// status is never touched on conflict: a question pulled by a player report stays pulled until a human restores it.
+sql.push(`UPDATE questions SET status = 'retired' WHERE status = 'approved' AND id NOT IN (${okQ.map((x) => q(x.id)).join(",") || "''"});`);
+sql.push(`UPDATE personalities SET status = 'retired' WHERE status = 'approved' AND id NOT IN (${okP.map((x) => q(x.id)).join(",") || "''"});`);
+sql.push("DELETE FROM names;", "DELETE FROM curses;");
+for (const n of names) sql.push(`INSERT INTO names (name, kind) VALUES (${q(n.name)}, ${q(n.kind)});`);
+for (const c of okC) sql.push(`INSERT INTO curses (text, status) VALUES (${q(c)}, 'approved');`);
+
+mkdirSync("content/.build", { recursive: true });
+const file = "content/.build/import.sql";
+writeFileSync(file, sql.join("\n") + "\n");
+console.log(`validated: ${okQ.length} questions, ${okP.length} personalities, ${names.length} names, ${okC.length} curses (${skipped} non-approved left out)`);
+for (const w of warn) console.log("  note: " + w);
+if (DRY) { console.log(`dry run: SQL written to ${file}`); process.exit(0); }
+
+const r = spawnSync(process.platform === "win32" ? "npx.cmd" : "npx", ["wrangler", "d1", "execute", "DB", REMOTE ? "--remote" : "--local", `--file=${file}`], { stdio: "inherit", shell: process.platform === "win32" });
+if (r.status !== 0) { console.error("wrangler d1 execute failed (have you run the migrations? npm run db:migrate:" + (REMOTE ? "remote" : "local") + ")"); process.exit(r.status ?? 1); }
+console.log(`imported into the ${REMOTE ? "REMOTE" : "LOCAL"} database`);

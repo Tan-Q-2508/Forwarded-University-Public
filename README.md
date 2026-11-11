@@ -4,6 +4,8 @@ A free-to-host party game for 3–8 friends, played on phones while everyone tal
 Three rounds of fake-headline bluffing, a mystery-box interlude, and a pun-hint guessing finale.
 Solo play, English with Indian references.
 
+**Live demo:** https://forwarded-university.funplays.workers.dev
+
 > This is the public code-only copy. The question bank, harvest pipeline data and prompts are private.
 > A synthetic TEST pack lets the whole game run locally.
 
